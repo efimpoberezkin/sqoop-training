@@ -1,0 +1,14 @@
+1. Connecting to mysql, creating db, table and staging table; granting privileges
+
+[root@sandbox-hdp ~]# mysql -u root -p
+
+mysql> create database testDb;
+mysql> use testDb;
+mysql> create table weather (stationId varchar(20), date date, tmin int, tmax int, snow int, snwd int, prcp int);
+mysql> create table weatherStaging like weather;
+mysql> grant all privileges on testDb.* to ''@localhost;
+
+
+2. Exporting data from hdfs to mysql; amount of mappers is default - it would take longer for a single mapper to process all input files, and increasing amount of mappers to 12 didn't improve performance, at least in pseudo-distributed cluster
+
+[root@sandbox-hdp ~]# sqoop export --connect jdbc:mysql://localhost/testDb --table weather --staging-table weatherStaging --clear-staging-table --export-dir /user/maria_dev/hw7/weather-table
